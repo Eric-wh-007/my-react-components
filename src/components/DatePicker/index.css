@@ -15,7 +15,7 @@
   text-align: center;
 }
 .Datepicker-header > div {
-  padding:5px;
+  padding:0px 5px;
 }
 
 .Datepicker-header > div:nth-child(odd) > span {
@@ -28,7 +28,6 @@
 }
 .Datepicker-body {
   width:auto;
-  height: 280px;
 }
 .Datepicker-body span {
   width:40px;
@@ -59,8 +58,14 @@
   background: #e6f7ff;
   transition: background .5s ease-in-out;
 }
-.Datepicker-notActive {
+.Datepicker-default {
   color:#ccc;
+}
+.Datepicker-notActive {
+  color: #000;
+  background-color:#fff;
+  border:1px solid #fff;
+  border-radius: 3px;
 }
 .Datepicker-Active {
   color: #1585ff;
