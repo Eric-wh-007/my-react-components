@@ -1,0 +1,72 @@
+.Datepicker {
+  width:290px;
+  border:1px solid #ccc;
+  box-shadow: 1px 1px 3px 1px #ccc;
+  border-radius: 5px;
+}
+.Datepicker-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  border-bottom: 2px solid #ccc;
+  padding-bottom: 3px;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+}
+.Datepicker-header > div {
+  padding:5px;
+}
+
+.Datepicker-header > div:nth-child(odd) > span {
+  cursor: pointer;
+  transition: color .3s ease-in-out;
+}
+.Datepicker-header > div:nth-child(odd) > span:hover {
+  color: #1585ff;
+  transition: color .3s ease-in-out;
+}
+.Datepicker-body {
+  width:auto;
+  height: 280px;
+}
+.Datepicker-body span {
+  width:40px;
+  height:40px;
+  box-sizing: border-box;
+}
+
+.Datepicker-body div:first-child {
+  padding:0 5px;
+  display: flex;
+  justify-content: space-between;
+}
+.Datepicker-body div:last-child {
+  padding:0 5px;
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+.Datepicker-body div:last-child > span {
+  text-align: center;
+  width: 40px;
+  height: 40px;
+  transition:  background .3s ease;
+  line-height: 40px;
+  cursor: pointer;
+}
+.Datepicker-body div:last-child > span:hover {
+  background: #e6f7ff;
+  transition: background .5s ease-in-out;
+}
+.Datepicker-notActive {
+  color:#ccc;
+}
+.Datepicker-Active {
+  color: #1585ff;
+  background-color: #e6f7ff;
+  font-weight: bold;
+  border:1px solid #1585ff;
+  border-radius: 3px;
+}
+
