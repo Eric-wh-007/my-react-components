@@ -19,16 +19,14 @@ export default class DayGrid extends React.Component<Props> {
   constructor(props: any) {
     super(props);
     this.date = new Date(this.props.value);
-    this.value = this.date.getDate();
-    // this.key = this.props.getKey();
     this.key = this.props.indexKey;
   }
   private onSelect = () => {
-    console.log(this.props);
     this.props.onSelect(this.key);
   }
   public render = () => {
-    const { title, isActive, inThisMonth } = this.props;
+    const { title, isActive, inThisMonth ,value} = this.props;
+    const content = new Date(value).getDate()
     let cls = '';
     if(inThisMonth && isActive === false) { // 在月份内 但未选中
       cls = notActiveClassName;
@@ -38,7 +36,7 @@ export default class DayGrid extends React.Component<Props> {
       cls = defaultClassName;
     }
     return (
-      <span title={title} className={cls} onClick={this.onSelect}>{this.value}</span>
+      <span title={title} className={cls} onClick={this.onSelect}>{content}</span>
     )
   }
 }

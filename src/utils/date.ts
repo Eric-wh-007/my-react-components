@@ -13,12 +13,12 @@ export const getDays = (year:number, month:number): number => {
  * 根据 年 ，月 获取指定月份的第一天是周几 
  * @param year 
  * @param month 
- * @return whichDay 第一次是周几 0-6
+ * @return whichDay 第一次是周几 1-7
  */
 export const getSomeMonthFirstDay = (year: number, month: number):number => {
   if(month-1<0) {throw Error('wrong month')}
   let whichDay = new Date(year, month - 1).getDay();
-  if(whichDay === 0) {whichDay =7}
+  if(whichDay === 0) {whichDay = 7}
   return whichDay;
 }
 
@@ -26,7 +26,7 @@ export const getSomeMonthFirstDay = (year: number, month: number):number => {
  * 根据 年 ，月 获取指定月份的最后一天是周几 
  * @param year 
  * @param month 
- * @return whichDay 是周几 0-6
+ * @return whichDay 是周几 1-7
  */
 export const getSomeMonthEndDay = (year: number, month: number):number => {
   if(month - 1 < 0) {throw Error('wrong month')}

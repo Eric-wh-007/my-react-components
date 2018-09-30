@@ -9,13 +9,11 @@ interface Props {
 
 interface State {
   dateGrids: DateGridItem[];
-}
-
-interface Today {
-  year: number;
+  year:number;
   month: number;
   day: number;
 }
+
 
 interface DateGridItem {
   title: string;
@@ -25,87 +23,104 @@ interface DateGridItem {
 }
 
 class DatePicker extends React.Component<Props, State> {
-  private gridNums:number;
-  private now: Date;
-  private today: Today;
-  private dateGrids: DateGridItem[];
   private selectedDate: Date;
   private preSelectedIndex: number;
 
   constructor(props:any) {
     super(props);
-    this.gridNums = 42; // 6*7
-    this.now = new Date();
-    this.today = {
-      year: this.now.getFullYear(),
-      month: this.now.getMonth(),
-      day: this.now.getDate(),
-    }
+    const date = new Date();
     this.state = {
-      dateGrids: []
+      dateGrids: [],
+      year: date.getFullYear(), // 默认是当前时间点
+      month:date.getMonth() + 1,
+      day:date.getDate(),
     }
   }
   public componentDidMount = () => {
+    const { year,month } = this.state;
     this.setState({
-      dateGrids: this.generateDayGrid(),
+      dateGrids: this.generateDayGrid(year, month),
     })
+    
   }
 
-  private generateDayGrid = (): DateGridItem[] => {
-    const { month, year } = this.today;
-    let preMonthLastDay = 0;
-    const thisMonthDays = getDays(year,month);
-    if(month === 1) { // month 为1月份的时候
-      preMonthLastDay = getSomeMonthEndDay(year - 1,12)
+  private generateDayGrid = (year:number, month: number): DateGridItem[] => {
+    const date = {year,month};
+    const result = this.preMonthGrid(date).concat(this.curMonthGrid(date), this.nextMonthGrid(date));
+    return result;
+  }
+
+  private preMonthGrid = ({year, month}:{year:number,month:number}): DateGridItem[] => {
+    const isActive = false;
+    const inThisMonth = false;
+    const resultGrids: DateGridItem[] = [];
+    const curMonthFirstDay = getSomeMonthFirstDay(year, month); // 当前月的第一天是周几
+    if(curMonthFirstDay === 1) { return []; } // 若第一天是周一 没必要再往下走
+    if(month === 1) {
+      year--;
+      month = 12;
     } else {
-      preMonthLastDay = getSomeMonthEndDay(year,month-1)
+      month--;
     }
+    const preMonthLastDay = getDays(year, month);  // 上一个月的总天数
+    const forTimes = curMonthFirstDay-1;
+    const start = preMonthLastDay - forTimes; // 日历开始的日期
     
-    const preGrids: DateGridItem[] = [];
-    const midGrids: DateGridItem[] = [];
-    const lastGrids: DateGridItem[] = [];
-    for(let i = 1;i <= preMonthLastDay; i++) { // 上个月
-      const isActive = false;
-      const inThisMonth = false;
-      const lastmonthDays = getDays(year, month-1);// 上个月的天数
-      const day = lastmonthDays-preMonthLastDay+i
-      preGrids.push({
-        title: `${year} 年 ${month-1} 月 ${day} 日`,
-        value: `${year}/${month-1}/${day}`,
+    for(let i = 0;i <forTimes;i++) {
+      const day = start+i+1;
+      resultGrids.push({
+        title: `${year} 年 ${month} 月 ${day} 日`,
+        value: `${year}/${month}/${day}`,
+        isActive,
+        inThisMonth,
+      });
+    }
+    return resultGrids;
+
+  }
+  private curMonthGrid = ({year, month}:{year:number,month:number}): DateGridItem[] => {
+    const resultGrids: DateGridItem[] = [];
+    const curMonthDays = getDays(year, month); // 当前月的天数
+    const curMonthFirstDay = getSomeMonthFirstDay(year, month); // 当前月的第一天
+    const forTimes = curMonthDays;
+    const isActive = false;
+    const inThisMonth = true;
+
+    for(let i = 0;i<forTimes;i++) {
+      const day = i+1;
+      resultGrids.push({
+        title: `${year} 年 ${month} 月 ${day} 日`,
+        value: `${year}/${month}/${day}`,
         isActive,
         inThisMonth,
       })
+    }
+    return resultGrids;
+  }
+  private nextMonthGrid = ({year, month}:{year:number,month:number}): DateGridItem[] => {
+    const resultGrids: DateGridItem[] = [];
+    const curMonthLastDay = getSomeMonthEndDay(year, month); // 当前月的最一天是周几
+    const forTimes = 7 - curMonthLastDay;
+    if(forTimes === 0){return[]}
+    const isActive = false;
+    const inThisMonth = false;
+    if(month === 12) {
+      month=1;
+      year++;
+    } else {
+      month++;
     }
 
-    for(let i = 1;i <= thisMonthDays; i++) {// 这个月
-      const isActive = false;
-      const inThisMonth = true;
-      midGrids.push({
-        title: `${year} 年 ${month} 月 ${i} 日`,
-        value: `${year}/${month}/${i}`,
+    for(let i = 0;i<forTimes;i++) {
+      const day = i+1;
+      resultGrids.push({
+        title: `${year} 年 ${month} 月 ${day} 日`,
+        value: `${year}/${month}/${day}`,
         isActive,
         inThisMonth,
       })
     }
-    let nextMonthForTimes = this.gridNums-thisMonthDays-preMonthLastDay;
-    if( nextMonthForTimes > 7) {
-      nextMonthForTimes = nextMonthForTimes - 7;
-    }
-    for(let i = 1;i <= nextMonthForTimes; i++) { // 下个月
-      const isActive = false;
-      const inThisMonth = false;
-      lastGrids.push({
-        title: `${year} 年 ${month+1} 月 ${i} 日`,
-        value:`${year}/${month+1}/${i}`,
-        isActive,
-        inThisMonth,
-      })
-    }
-    const result = preGrids.concat(midGrids, lastGrids);
-    this.setState({
-      dateGrids: result,
-    })
-    return result;
+    return resultGrids;
   }
 
   private select = (index: number) => {
@@ -126,18 +141,62 @@ class DatePicker extends React.Component<Props, State> {
     }
   }
 
+  private lastYear = () => {
+    
+    let { year } = this.state;
+    const { month } = this.state;
+    year--;
+    this.setState({
+      year,
+      dateGrids: this.generateDayGrid(year, month),
+    })
+  }
+  private lastMonth = () => {
+    let { month } = this.state;
+    const { year } = this.state;
+    month--;
+    this.setState({
+      month,
+      dateGrids: this.generateDayGrid(year, month),
+    })
+  }
+
+  private nextYear = () => {
+    let { year } = this.state;
+    const { month } = this.state;
+    year++;
+    this.setState({
+      year,
+      dateGrids: this.generateDayGrid(year, month),
+    })
+  }
+
+  private nextMonth = () => {
+    let { month, year } = this.state;
+    if(month === 12) {
+      month = 1;
+      year++;
+    }
+    month++;
+    this.setState({
+      year,
+      month,
+      dateGrids: this.generateDayGrid(year,month),
+    })
+  }
+
   public render() {
     return (
       <div className='Datepicker'>
         <header className='Datepicker-header'>
           <div>
-            <span>&lt;&lt; </span>
-            <span>&lt;</span>
+            <span onClick={this.lastYear}>&lt;&lt; </span>
+            <span onClick={this.lastMonth}>&lt;</span>
           </div>
-          <span>{` ${this.today.year}年 ${this.today.month}月 `}</span>
+          <span>{` ${this.state.year}年 ${this.state.month}月 `}</span>
           <div>
-            <span>&gt; </span>
-            <span>&gt;&gt;</span>
+            <span onClick={this.nextMonth}>&gt; </span>
+            <span onClick={this.nextYear}>&gt;&gt;</span>
           </div>
         </header>
         <section className='Datepicker-body'>
